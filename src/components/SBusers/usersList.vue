@@ -66,35 +66,36 @@
         >
           <thead class="ss-table-blue">
             <tr>
-              <th scope="col">الصلاحية</th>
               <th scope="col">الاسم</th>
               <th scope="col">البريد الالكتروني</th>
+              <th scope="col">الصلاحية</th>
               <th scope="col">رقم الهاتف</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(user, index) in allUsersWithRoles" :key="user.id">
-              <!-- user role -->
-              <th>
-                <span
-                  v-if="user.roleName == 'superAdmin'"
-                  class="badge rounded-pill bg-success w-auto"
-                  >{{ user.roleName }}</span
-                >
-                <span
-                  v-else-if="user.roleName == 'seller'"
-                  class="badge rounded-pill bg-warning w-auto"
-                  >{{ user.roleName }}</span
-                >
-                <span v-else class="badge rounded-pill bg-secondary w-auto">
-                  {{ user.roleName }}
-                </span>
-              </th>
               <!-- user name -->
               <td>{{ user.name }}</td>
               <!-- user email -->
               <td>{{ user.email }}</td>
+              <!-- user role -->
+              <td v-if="user.roles.length > 0">
+                <span
+                  v-if="user.roles[0].name == 'superAdmin'"
+                  class="badge rounded-pill bg-success w-auto"
+                  >{{ user.roles[0].name }}</span
+                >
+                <span
+                  v-else-if="user.roles[0].name == 'seller'"
+                  class="badge rounded-pill bg-warning w-auto"
+                  >{{ user.roles[0].name }}</span
+                >
+                <span v-else class="badge rounded-pill bg-secondary w-auto">
+                  {{ user.roles[0].name || "" }}
+                </span>
+              </td>
+              <td v-else></td>
               <!-- user phone -->
               <td>{{ user.phone }}</td>
               <!-- upate and delete options -->
@@ -116,7 +117,7 @@
                         class="btn btn-sm text-dark py-1"
                         :id="`editUser-${index}`"
                       >
-                        <i class="fas fa-user-edit ps-1"></i> edit
+                        <i class="fas fa-user-edit ps-1"></i> تعديل
                       </button>
                     </li>
                     <li>
@@ -124,7 +125,7 @@
                         class="btn btn-sm text-dark py-1"
                         @click.prevent="showDeleteAlert(user.id)"
                       >
-                        <i class="fas fa-user-minus ps-1"></i> delete
+                        <i class="fas fa-user-minus ps-1"></i> حذف
                       </button>
                     </li>
                   </ul>
@@ -134,6 +135,7 @@
                 :currentUser="user"
                 :currentAllRoles="allRoles"
                 :showHideUPdateForm="showHideUPdateForm"
+                :fetchAllUsers="fetchAllUsers"
               />
             </tr>
           </tbody>
@@ -168,7 +170,7 @@ export default {
         phone: "digits:10",
         role: "required",
       },
-      allUsersWithRoles: null,
+      allUsersWithRoles: [],
       userslength: 0,
       in_submission: false,
       show_alert: false,

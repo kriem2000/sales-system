@@ -15,12 +15,12 @@
               <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                 <!-- user add form -->
                 <vee-form
-                  class="mx-1 mx-md-4"
+                  class="text-end"
                   @submit="addNewUser"
                   :validationSchema="registerSchema"
                 >
-                  <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-user ms-3"></i>
+                  <div class="d-flex flex-row mb-4">
+                    <i class="fas fa-user ms-3 mt-3"></i>
                     <div class="form-floating flex-fill mb-0">
                       <vee-field
                         name="name"
@@ -182,8 +182,8 @@ export default {
   data() {
     return {
       registerSchema: {
-        name: "required|alpha|max:100",
-        lastname: "alpha|max:100",
+        name: "required|alpha_spaces|max:100",
+        lastname: "alpha_spaces|max:100",
         email: "required|email",
         password: "required|min:5|max:20",
         phone: "digits:10",

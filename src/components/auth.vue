@@ -52,7 +52,7 @@
             <div class="text-start text-danger fw-bold p-2">
               <ErrorMessage name="password" />
             </div>
-            <div class="form-check text-start py-2">
+            <div class="form-check py-2 float-end">
               <vee-field
                 name="rememberMe"
                 class="form-check-input"

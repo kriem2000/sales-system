@@ -60,7 +60,7 @@ body {
 }
 
 .btn-outline-ss-blue:hover {
-  color: var(--white);
+  color:var(--ss-light-blue);
 }
 
 .btn-outline-ss-blue-table:hover {
@@ -207,7 +207,6 @@ main {
   position: fixed;
   overflow: auto;
   height: 100vh;
-  width: auto !important;
   right: 0 !important;
   z-index: 1000;
 }
@@ -302,4 +301,8 @@ li.Collapsible-item > div ul li a {
 
 ::-webkit-scrollbar-corner {
   width: 10px;
+}
+
+.height-fit-content {
+  height: fit-content;
 }

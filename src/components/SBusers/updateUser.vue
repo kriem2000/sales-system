@@ -3,7 +3,10 @@
     :id="`updateuserFormContainer-${user.id}`"
     class="row justify-content-center d-none updateuserFormContainer"
   >
-    <div class="col-lg-6 col-sm-12 bg-light py-5 px-5 rounded" v-if="true">
+    <div
+      class="col-lg-6 col-sm-12 bg-light py-5 px-5 rounded height-fit-content"
+      v-if="true"
+    >
       <!--update user form-->
       <vee-form @submit="updateUser" :validationSchema="updateUserSchema">
         <div class="d-flex flex-row align-items-center mb-4 text-end">
@@ -30,7 +33,7 @@
               class="form-control"
               :id="`lastname${user.id}`"
               placeholder="lastname"
-              v-model="user.lastName"
+              v-model="user.lastname"
             />
             <ErrorMessage class="text-danger font-bold" name="lastname" />
             <label for="floatingInput">اللقب</label>
@@ -70,12 +73,27 @@
 
         <div class="d-flex flex-row align-items-center mb-4 text-end">
           <i class="fas fa-user-tag ms-3 fa-fw"></i>
+          <!-- user with roles -->
           <vee-field
+            v-if="user.roles.length > 0"
             name="role"
             as="select"
             class="form-select font-bold p-3"
             aria-label="Default select example"
-            v-model="user.roleName"
+            v-model="user.roles[0].name"
+          >
+            <option selected disabled>اختيار صلاحية المستخدم</option>
+            <option v-for="role in currentAllRoles" :key="role" :value="role">
+              {{ role }}
+            </option>
+          </vee-field>
+          <!-- user without roles -->
+          <vee-field
+            v-else
+            name="role"
+            as="select"
+            class="form-select font-bold p-3"
+            aria-label="Default select example"
           >
             <option selected disabled>اختيار صلاحية المستخدم</option>
             <option v-for="role in currentAllRoles" :key="role" :value="role">
@@ -141,6 +159,10 @@ export default {
       type: Function,
       required: true,
     },
+    fetchAllUsers: {
+      type: Function,
+      required: true,
+    },
   },
   computed: {
     ...mapGetters({
@@ -178,9 +200,10 @@ export default {
           this.alert_icon = "fas fa-check-circle ms-1";
           this.alert_class = "alert alert-primary";
           this.alert_message = "تم تحديث بيانات المستخدم";
+          this.fetchAllUsers();
         })
         .catch((err) => {
-          console.log(err.response);
+          console.log(err);
           this.in_submission = false;
           this.show_alert = true;
           this.alert_class = "alert alert-danger";

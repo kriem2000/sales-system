@@ -139,7 +139,7 @@ export default {
         .catch((error) => {
           console.log(error.toJSON());
         });
-      window.location.reload();
+      // window.location.reload();
     },
     sendToDB() {
       if (!this.authenticated) {

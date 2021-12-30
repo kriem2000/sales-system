@@ -39,8 +39,8 @@ export default {
     defineRule("email", email);
     defineRule("digits", digits);
     defineRule("numeric", numeric);
-    defineRule("max_value", minVal);
-    defineRule("min_value", maxVal);
+    defineRule("max_value", maxVal);
+    defineRule("min_value", minVal);
     defineRule("confirmed", confirmed);
     defineRule("excluded", excluded);
     defineRule("excluded_country", excluded);

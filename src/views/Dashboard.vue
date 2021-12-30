@@ -14,7 +14,7 @@
           :changeDynamicComponent="changeDynamicComponent"
         />
       </div>
-      <div class="col-sm-12 col-md-12 col-lg-10 col-xl-8 w-75">
+      <div class="col-sm-12 col-md-12 col-lg-10 col-xl-8">
         <!--dynamic content goes here-->
         <keep-alive>
           <component
