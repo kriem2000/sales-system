@@ -1,136 +1,178 @@
 <template>
-  <div class="row">
-    <!--greeting bar-->
-    <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
-      <h4 class="text-end mt-5 ps-5 dbh-title">مرحبا {{ user.name }}</h4>
+  <div class="container-fluid" v-if="!generatingBill">
+    <div class="row">
+      <!--greeting bar-->
+      <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
+        <h4 class="text-end mt-5 ps-5 dbh-title">مرحبا {{ user.name }}</h4>
+      </div>
     </div>
-  </div>
-  <br />
-  <div class="row">
-    <!--right col-->
-    <div class="col-lg-8 col-md-12 col-sm-12">
-      <div class="conatainer-fluid shadow border table-responsive">
-        <!-- no scanned products message -->
+    <br />
+    <div class="row">
+      <!--right col-->
+      <div class="col-lg-8 col-md-12 col-sm-12">
         <div
-          v-show="allScannedProducts.length == 0"
-          class="w-100 text-center p-5"
+          class="
+            conatainer-fluid
+            shadow
+            border
+            table-responsive
+            h-100
+            border-0
+            rounded
+          "
         >
-          <small class="text-muted">لا توجد مُنتجات تم إدخالها حتي الان</small>
+          <!-- no scanned products message -->
+          <div
+            v-show="allScannedProducts.length == 0"
+            class="w-100 text-center top-50 position-relative"
+          >
+            <small class="text-muted"
+              >لا توجد مُنتجات تم قٍرائتها حتي الان</small
+            >
+          </div>
+          <!--items scanned table-->
+          <table
+            v-show="allScannedProducts.length > 0"
+            class="table table-borderless text-center"
+            id="scannedItems"
+          >
+            <thead class="ss-table-blue">
+              <tr>
+                <td>اسم المنتج</td>
+                <td>الكمية المطلوبة</td>
+                <td>الكمية المتوفرة</td>
+                <td>سعر القطعة</td>
+                <td>الأجمالي</td>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="m-2"
+                v-for="product in allScannedProducts"
+                :key="product.id"
+              >
+                <td>{{ product.name }}</td>
+                <td>
+                  <button
+                    @click.prevent="
+                      dec(product.id, product.price, product.quantity)
+                    "
+                    class="btn btn-sm btn-outline-ss-blue-table"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input
+                    class="
+                      w-auto
+                      focus-none
+                      text-center
+                      border-0
+                      form-control
+                      m-1
+                      d-inline
+                    "
+                    :id="`ProductQuantity${product.id}`"
+                    type="number"
+                    min="1"
+                    :max="product.quantity"
+                    value="1"
+                    @change="
+                      getTotalPrice(product.id, product.price, product.quantity)
+                    "
+                  />
+                  <button
+                    @click.prevent="
+                      inc(product.id, product.price, product.quantity)
+                    "
+                    class="btn btn-sm btn-outline-ss-blue-table"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price }}</td>
+                <td :id="`totalCol${product.id}`">
+                  {{
+                    getTotalPrice(product.id, product.price, product.quantity)
+                  }}
+                </td>
+                <td @click="removeProduct(product.id)">
+                  <i class="text-danger me-4 fas fa-trash-alt"></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <!--items scanned table-->
-        <table
+        <!--options button-->
+        <div
           v-show="allScannedProducts.length > 0"
-          class="table table-borderless text-center"
-          id="scannedItems"
+          class="row justify-content-between mx-2 my-4"
         >
-          <thead class="ss-table-blue">
-            <tr>
-              <td>اسم المنتج</td>
-              <td>الكمية</td>
-              <td>سعر القطعة</td>
-              <td>الأجمالي</td>
-              <td></td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              class="m-2"
-              v-for="product in allScannedProducts"
-              :key="product.id"
-            >
-              <td>{{ product.name }}</td>
-              <td>
-                <button
-                  @click.prevent="dec(product.id)"
-                  class="btn btn-sm btn-outline-ss-blue-table"
-                >
-                  <i class="fas fa-minus"></i>
-                </button>
-                <input
-                  class="w-25 focus-none text-center border-0 border-info m-1"
-                  :id="`ProductQuantity${product.id}`"
-                  type="number"
-                  min="1"
-                  max="999"
-                  value="1"
-                  @change="getTotalPrice(product.id, product.price)"
-                />
-                <button
-                  @click.prevent="inc(product.id)"
-                  class="btn btn-sm btn-outline-ss-blue-table"
-                >
-                  <i class="fas fa-plus"></i>
-                </button>
-              </td>
-              <td>{{ product.price }}</td>
-              <td :id="`totalCol${product.id}`">
-                {{ getTotalPrice(product.id, product.price) }}
-              </td>
-              <td>
-                <i class="text-danger me-4 fas fa-trash-alt"></i>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!--options button-->
-      <div
-        v-show="allScannedProducts.length > 0"
-        class="row justify-content-between mx-2 my-4"
-      >
-        <div class="col">
-          <button
-            class="
-              btn btn-sm btn-ss-blue
-              text-white
-              font-bold
-              d-inline
-              float-end
-            "
-          >
-            Finish & check out
-            <i class="fas fa-shopping-cart"></i>
-          </button>
-          <button
-            class="
-              btn btn-sm btn-warning
-              text-white
-              font-bold
-              d-inline
-              float-start
-            "
-          >
-            Restart
-            <i class="fas fa-power-off"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!--left col-->
-    <div class="col-lg-4 col-md-12 col-sm-12">
-      <div class="row">
-        <!--input for scanned items-->
-        <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
-          <div class="container shadow rounded m-1 d-flex flex-row">
-            <input
-              name="productId"
-              type="text"
-              class="form-control border-0 p-1 my-2 focus-none d-inline"
-              placeholder="الرقم التعريفي للمُنتج"
-            />
+          <div class="col">
             <button
-              class="btn btn-sm btn-ss-light-blue d-inline text-white my-3"
+              @click.prevent="passProductsToBasket"
+              class="
+                btn btn-sm btn-ss-blue
+                text-white
+                font-bold
+                d-inline
+                float-end
+              "
             >
-              <i class="fas fa-qrcode"></i>
+              إنهاء و إصدار الفاتورة
+              <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button
+              @click.prevent="restart"
+              class="
+                btn btn-sm btn-warning
+                text-white
+                font-bold
+                d-inline
+                float-start
+              "
+            >
+              البدء من جديد
+              <i class="fas fa-power-off"></i>
             </button>
           </div>
         </div>
-        <!--calculator box-->
-        <div class="col">
-          <calculator />
+      </div>
+      <!--left col-->
+      <div class="col-lg-4 col-md-12 col-sm-12">
+        <div class="row">
+          <!--input for scanned items-->
+          <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
+            <div class="container shadow rounded m-1 d-flex flex-row">
+              <input
+                name="productId"
+                type="text"
+                class="form-control border-0 p-1 my-2 focus-none d-inline"
+                placeholder="الرقم التعريفي للمُنتج"
+              />
+              <button
+                @click="axiosScan"
+                class="btn btn-sm btn-ss-light-blue d-inline text-white my-3"
+                :disabled="scanBtn_in_submission"
+              >
+                <i class="fas fa-qrcode"></i>
+              </button>
+            </div>
+          </div>
+          <!--calculator box-->
+          <div class="col">
+            <calculator />
+          </div>
         </div>
       </div>
     </div>
+  </div>
+  <div v-if="generatingBill">
+    <new-bill
+      :beginBillProcess="beginBillProcess"
+      :productsInBasket="productsInBasket"
+    />
   </div>
 </template>
 
@@ -138,19 +180,31 @@
 import Calculator from "@/components/SBhome/Calculator.vue";
 import { mapGetters } from "vuex";
 import axiosConfig from "@/includes/axiosConfig";
+import newBill from "@/components/SBbills/newBill.vue";
+
 export default {
+  props: {
+    changeDynamicComponent: {
+      type: Function,
+      required: true,
+    },
+  },
   computed: {
     ...mapGetters({
       user: "user",
       config: "config",
     }),
   },
-  name: "DBHome",
-  components: { Calculator },
+  name: "SBHome",
+  components: { Calculator, newBill },
   data() {
     return {
       lastScannedId: "",
       allScannedProducts: [],
+      productsInBasket: [],
+      scanBtn_in_submission: false,
+      restartBtn: false,
+      generatingBill: false,
     };
   },
   methods: {
@@ -170,40 +224,143 @@ export default {
       }
     },
     async axiosScan(id) {
-      await axiosConfig
-        .get(`product/${id}`, this.config)
-        .then((res) => {
-          console.log(res);
-          this.allScannedProducts.push(res.data.info);
-        })
-        .catch((err) => {
-          console.log(err.response);
-        });
+      this.scanBtn_in_submission = true;
+      /* check if where the id coming from ? input or scanner device */
+      if (id.type == "click") {
+        console.log(id.type);
+        id = document.getElementsByName("productId")[0].value;
+        document.getElementsByName("productId")[0].value = "";
+      }
+      id.length > 0
+        ? await axiosConfig
+            .get(`product/${id}`, this.config)
+            .then((res) => {
+              console.log(res);
+              /* prevent duplication in the products list */
+              !this.containsObject(res.data.info, this.allScannedProducts)
+                ? this.allScannedProducts.push(res.data.info)
+                : this.errorMessage("هذا العنصر موجود مسبقاً");
+              this.scanBtn_in_submission = false;
+            })
+            .catch((err) => {
+              this.scanBtn_in_submission = false;
+              console.log(err.response);
+              /* display a error message for products that not found */
+              this.errorMessage("هذا العنصر غير موجود, او تم نفاذ الكمية");
+              return;
+            })
+        : "";
     },
-    getTotalPrice(id, price) {
-      console.log("hi");
-      let number = document.getElementById(`ProductQuantity${id}`);
-      number = number != null ? number.value : 1;
+    getTotalPrice(id, price, quantity) {
+      let input = document.getElementById(`ProductQuantity${id}`);
+      let number = input != null ? input.value : 1;
       let totalcol = document.getElementById(`totalCol${id}`);
-      if (totalcol != null) {
-        totalcol.innerText = number * price;
-      } else {
-        return number * price;
+      if (number <= quantity) {
+        if (totalcol != null) {
+          input.classList.contains("is-invalid")
+            ? input.classList.toggle("is-invalid")
+            : "";
+
+          totalcol.innerText = number * price;
+        } else {
+          return number * price;
+        }
+      } else if (input != null) {
+        input.classList.toggle("is-invalid");
       }
     },
-    inc(id) {
+    inc(id, price, quantity) {
+      console.log(quantity);
       let number = document.getElementById(`ProductQuantity${id}`);
-      number.value = parseInt(number.value) ? parseInt(number.value) + 1 : 1;
+      if (number.value < quantity) {
+        number.value = parseInt(number.value) ? parseInt(number.value) + 1 : 1;
+        this.getTotalPrice(id, price, quantity);
+      }
     },
-    dec(id) {
+    dec(id, price, quantity) {
       let number = document.getElementById(`ProductQuantity${id}`);
       if (parseInt(number.value) > 1) {
         number.value = parseInt(number.value) - 1;
+        this.getTotalPrice(id, price, quantity);
       }
     },
+    containsObject(obj, list) {
+      let i;
+      for (i = 0; i < list.length; i++) {
+        if (list[i].id == obj.id) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    removeProduct(id) {
+      let i;
+      for (i = 0; i < this.allScannedProducts.length; i++) {
+        if (this.allScannedProducts[i].id == id) {
+          this.allScannedProducts.splice(i, 1);
+          return;
+        }
+      }
+    },
+    async restart() {
+      await this.confirmMessage(
+        "سيتم الغاء كل العناصر الموجودة, وسيتم البدء من جديد"
+      );
+      console.log(this.restartBtn);
+      this.restartBtn ? (this.allScannedProducts = []) : "";
+    },
+    errorMessage(msg) {
+      this.$swal.fire({
+        icon: "error",
+        title: "خطأ !",
+        text: msg,
+        confirmButtonText: "حسنا",
+        confirmButtonColor: "#216bae",
+      });
+    },
+    async confirmMessage(msg) {
+      await this.$swal
+        .fire({
+          title: "هل انت متأكد ؟",
+          text: msg,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#198754",
+          cancelButtonColor: "#dc3545",
+          confirmButtonText: "نعم",
+          cancelButtonText: "لا",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            this.restartBtn = true;
+          }
+        });
+    },
+    passProductsToBasket() {
+      this.productsInBasket = [];
+      let aux;
+      this.allScannedProducts.map((val) => {
+        aux = document.getElementById(`ProductQuantity${val.id}`).value;
+        if (aux <= val.quantity) {
+          val.salesQuantity = aux;
+          console.log(this.productsInBasket);
+          this.productsInBasket.push(val);
+        }
+        this.allScannedProducts.length == this.productsInBasket.length
+          ? this.beginBillProcess()
+          : "";
+      });
+    },
+    beginBillProcess() {
+      this.generatingBill = !this.generatingBill;
+    },
   },
-  mounted() {
+  activated() {
     document.onkeydown = this.scanProcess;
+  },
+  deactivated() {
+    document.onkeydown = () => {};
   },
 };
 </script>

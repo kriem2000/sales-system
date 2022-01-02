@@ -108,8 +108,9 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import auth from "@/components/auth.vue";
+import axiosConfig from "@/includes/axiosConfig";
 
 export default {
   name: "home",
@@ -123,23 +124,23 @@ export default {
   },
   computed: {
     ...mapState(["toggleAuthModal", "authenticated"]),
+    ...mapGetters({
+      config: "config",
+    }),
   },
   methods: {
     ...mapActions(["toggleAuthModalAction"]),
     async signOut() {
-      let val = {
-        url: this.signOutUrl,
-      };
-      await this.$store
-        .dispatch("axiosPost", val)
+      await axiosConfig
+        .get(this.signOutUrl, this.config)
         .then((response) => {
           console.log(response);
           this.$store.commit("setUnAuthenticated");
+          window.location.reload();
         })
         .catch((error) => {
           console.log(error.toJSON());
         });
-      // window.location.reload();
     },
     sendToDB() {
       if (!this.authenticated) {
