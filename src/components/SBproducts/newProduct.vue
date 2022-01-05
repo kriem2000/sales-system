@@ -124,6 +124,7 @@
                     <div class="form-floating flex-fill mb-0">
                       <!-- product price -->
                       <vee-field
+                        :rules="{ regex: /^\d*\.?\d*$/ }"
                         name="price"
                         type="number"
                         class="form-control"
@@ -135,6 +136,25 @@
                         name="price"
                       />
                       <label for="floatingInput">السعر</label>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-row align-items-center mb-4">
+                    <i class="far fa-calendar-plus ms-3"></i>
+                    <div class="form-floating flex-fill mb-0">
+                      <!-- purchase date -->
+                      <vee-field
+                        name="purchase_date"
+                        type="date"
+                        class="form-control"
+                        id="purchase_date"
+                        placeholder="production date"
+                      />
+                      <ErrorMessage
+                        class="text-danger font-bold"
+                        name="purchase_date"
+                      />
+                      <label for="floatingInput">تاريخ الشراء</label>
                     </div>
                   </div>
 
@@ -154,25 +174,6 @@
                         name="expiry_date"
                       />
                       <label for="floatingInput"> تاريخ انتهاء الصلاحية</label>
-                    </div>
-                  </div>
-
-                  <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="far fa-calendar-plus ms-3"></i>
-                    <div class="form-floating flex-fill mb-0">
-                      <!-- production date -->
-                      <vee-field
-                        name="production_date"
-                        type="date"
-                        class="form-control"
-                        id="production_date"
-                        placeholder="production date"
-                      />
-                      <ErrorMessage
-                        class="text-danger font-bold"
-                        name="production_date"
-                      />
-                      <label for="floatingInput">تاريخ الاانتاج</label>
                     </div>
                   </div>
 
@@ -305,9 +306,9 @@ export default {
         detail: "max:200",
         dose: "required|max:20",
         type: "required|numeric",
-        price: "required|numeric|min_value:1",
+        price: "required|min_value:1",
         expiry_date: "required",
-        production_date: "required",
+        purchase_date: "required",
         quantity: "required|numeric",
         company_name: "alpha_spaces",
       },
@@ -372,9 +373,9 @@ export default {
           this.in_submission = false;
           console.log(err.response);
         });
-      setTimeout(() => {
-        this.show_alert = false;
-      }, 5000);
+      // setTimeout(() => {
+      //   this.show_alert = false;
+      // }, 5000);
     },
   },
   /* lifeCycle Hooks */

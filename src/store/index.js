@@ -45,6 +45,7 @@ export default createStore({
       return axiosConfig.post(val.url, val, state.config);
     },
     async checkAuthenticated({ commit }) {
+      /* here it's not necessary to pass the token because it will be saved in the localstorage when the page is refreshed */
       await axiosConfig
         .get("user")
         .then((response) => {

@@ -60,7 +60,9 @@ body {
 }
 
 .btn-outline-ss-blue:hover {
-  color:var(--ss-light-blue);
+  color: var(--white);
+  background-color: var(--ss-blue);
+  border-color: var(--ss-blue);
 }
 
 .btn-outline-ss-blue-table:hover {

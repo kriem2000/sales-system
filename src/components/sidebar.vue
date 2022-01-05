@@ -22,7 +22,12 @@
       <!--primary menu iteme-->
       <ul class="nav nav-pills flex-column mb-auto text-end p-0">
         <!--sidebar home-->
-        <li class="nav-item my-1">
+        <li
+          class="nav-item my-1"
+          v-if="
+            hasRole('seller') || hasRole('admin') || hasRole('sales manager')
+          "
+        >
           <a
             href="#"
             class="nav-link active-route text-white"
@@ -37,7 +42,7 @@
           </a>
         </li>
         <!--sidebar dashboard-->
-        <li class="my-1">
+        <li class="my-1" v-if="hasRole('admin') || hasRole('accountant')">
           <a
             href="#"
             class="nav-link text-white"
@@ -51,14 +56,19 @@
           </a>
         </li>
         <!--sidebar bills-->
-        <li class="my-1">
+        <li class="my-1" v-if="hasRole('admin') || hasRole('accountant')">
           <a href="#" class="nav-link text-white">
             <i class="fas fa-wallet mx-1"></i>
             الفواتير
           </a>
         </li>
         <!--sidebar products-->
-        <li class="my-2 me-3 Collapsible-item">
+        <li
+          class="my-2 me-3 Collapsible-item"
+          v-if="
+            hasRole('seller') || hasRole('admin') || hasRole('sales manager')
+          "
+        >
           <i class="fas fa-th mx-1"></i>
           <button
             class="btn btn-toggle rounded text-white p-0 ps-1 mb-1"
@@ -69,8 +79,9 @@
             المنتجات
           </button>
           <div class="collapse" id="product-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal small">
-              <li>
+            <ul class="btn-toggle-nav list-unstyled fw-normal small p-0 pe-2">
+              <!-- add a new product -->
+              <li v-if="hasRole('admin') || hasRole('sales manager')">
                 <a
                   href="#"
                   class="link-dark rounded"
@@ -83,7 +94,14 @@
                   اضافة عنصر جديد
                 </a>
               </li>
-              <li>
+              <!-- search for products -->
+              <li
+                v-if="
+                  hasRole('seller') ||
+                  hasRole('admin') ||
+                  hasRole('sales manager')
+                "
+              >
                 <a href="#" class="link-dark rounded">
                   <i class="fas fa-search m-1"></i>
                   البحث المتقدم</a
@@ -93,7 +111,7 @@
           </div>
         </li>
         <!--sidebar users-->
-        <li class="my-2 me-3 Collapsible-item">
+        <li class="my-2 me-3 Collapsible-item" v-if="hasRole('admin')">
           <i class="fas fa-users mx-1"></i>
           <button
             class="btn btn-toggle rounded text-white p-0 ps-1 mb-1"
@@ -104,7 +122,7 @@
             المستخدمين
           </button>
           <div class="collapse" id="user-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal small">
+            <ul class="btn-toggle-nav list-unstyled fw-normal small p-0 pe-2">
               <!--add new user-->
               <li>
                 <a
@@ -182,6 +200,7 @@ export default {
   computed: {
     ...mapGetters({
       config: "config",
+      user: "user",
     }),
   },
   props: {
@@ -213,6 +232,16 @@ export default {
         as[i].classList.toggle("active-route", false);
       }
       e.currentTarget.classList.toggle("active-route");
+    },
+    hasRole(roleName) {
+      let hasRole = false;
+      let allRoles = this.user.roles;
+      allRoles.map((val) => {
+        if (val.name == roleName) {
+          hasRole = true;
+        }
+      });
+      return hasRole;
     },
   },
 };

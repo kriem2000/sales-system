@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid bg-light m-2 border border-1 shadow-sm rounded">
     <div class="container">
+      <!-- title and image -->
       <div class="py-5 text-center">
         <img
           class="d-inline mx-auto mb-4"
@@ -13,10 +14,13 @@
       </div>
 
       <div class="row">
+        <!-- basket and discount -->
         <div class="col-md-4 order-md-2 mb-4">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted pe-5">قائمة المشتريات</span>
-            <span class="badge badge-secondary badge-pill">3</span>
+            <span class="badge bg-secondary rounded-pill">{{
+              productsInBasket.length
+            }}</span>
           </h4>
           <ul class="list-group mb-3">
             <li
@@ -26,195 +30,197 @@
                 justify-content-between
                 lh-condensed
               "
+              v-for="product in productsInBasket"
+              :key="product.id"
             >
               <div>
-                <h6 class="my-0">Product name</h6>
-                <small class="text-muted">Brief description</small>
+                <h6 class="my-0">{{ product.name }}</h6>
+                <small class="text-muted"
+                  >الكمية : {{ product.salesQuantity }}</small
+                >
               </div>
-              <span class="text-muted">$12</span>
-            </li>
-            <li
-              class="
-                list-group-item
-                d-flex
-                justify-content-between
-                lh-condensed
-              "
-            >
-              <div>
-                <h6 class="my-0">Second product</h6>
-                <small class="text-muted">Brief description</small>
-              </div>
-              <span class="text-muted">$8</span>
-            </li>
-            <li
-              class="
-                list-group-item
-                d-flex
-                justify-content-between
-                lh-condensed
-              "
-            >
-              <div>
-                <h6 class="my-0">Third item</h6>
-                <small class="text-muted">Brief description</small>
-              </div>
-              <span class="text-muted">$5</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between bg-light">
-              <div class="text-success">
-                <h6 class="my-0">Promo code</h6>
-                <small>EXAMPLECODE</small>
-              </div>
-              <span class="text-success">-$5</span>
+              <span class="text-muted">
+                {{ getTotalPrice(product.salesQuantity, product.price) }}
+                <b> LYD</b>
+              </span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-              <span>Total (USD)</span>
-              <strong>$20</strong>
+              <span class="fw-bold">الإجمالي</span>
+              <strong>{{ totalInvoice }} LYD</strong>
             </li>
           </ul>
+          <div class="text-end pe-4 d-flex flex-column">
+            <h6 class="d-block my-0 main-title fs-4 pe-4 text-muted mb-3">
+              نسبة التخفيض
+            </h6>
+            <small class="pe-4"
+              ><input
+                id="discount"
+                type="number"
+                placeholder="0"
+                min="0"
+                value="0"
+                class="form-control d-inline w-25 rounded-0 p-1"
+              />
+              <span
+                class="
+                  text-white
+                  h-50
+                  rounded-0
+                  badge
+                  bg-secondary
+                  position-relative
+                  p-2
+                  fw-bold
+                  fs-6
+                "
+                style="bottom: 1px; padding-bottom: 10px !important"
+                >%</span
+              ></small
+            >
+            <div class="pe-4 my-3">
+              <button
+                @click.prevent="applydiscount"
+                class="btn btn-sm mx-1 btn-outline-ss-blue"
+                :disabled="discountApplied"
+              >
+                تفعيل
+              </button>
+              <button
+                @click="discarddiscount"
+                class="btn btn-sm mx-1 btn-outline-danger"
+                :disabled="!discountApplied"
+              >
+                إالغاء
+              </button>
+            </div>
+          </div>
         </div>
+        <!-- bill form -->
         <div class="col-md-8 order-md-1">
           <h4 class="mb-3 fs-bold main-title fs-4">معلومات حول المُشْتَرِي</h4>
-          <form class="needs-validation" novalidate="">
+          <veeForm
+            @submit="generateBill"
+            class="needs-validation"
+            :validationSchema="generateBillSchema"
+          >
             <div class="row">
+              <!-- company name -->
               <div class="col-md-6 mb-3">
-                <label for="firstName">اسم الجهة المعنية</label>
-                <input
+                <label for="companyname">اسم الجهة المعنية</label>
+                <veeField
                   type="text"
                   class="form-control"
-                  id="firstName"
-                  placeholder=""
-                  value=""
-                  required=""
+                  name="companyname"
+                  id="companyname"
+                  placeholder="اسم الجهة المعنية"
                 />
-                <div class="invalid-feedback">
-                  Valid first name is required.
-                </div>
+                <ErrorMessage class="text-danger" name="companyname" />
               </div>
+              <!-- buyer name -->
               <div class="col-md-6 mb-3">
-                <label for="lastName">اسم المُشْتَرِي</label>
-                <input
+                <label for="buyername">اسم المُشْتَرِي</label>
+                <veeField
                   type="text"
                   class="form-control"
-                  id="lastName"
-                  placeholder=""
-                  value=""
-                  required=""
+                  id="buyername"
+                  name="buyername"
+                  placeholder="اسم المُشْتَرِي إذا وُجد"
                 />
-                <div class="invalid-feedback">Valid last name is required.</div>
+                <ErrorMessage class="text-danger" name="buyername" />
               </div>
             </div>
 
-            <div class="mb-3">
-              <label for="address">العنوان</label>
-              <input
-                type="text"
-                class="form-control"
-                id="address"
-                placeholder="عنوان الجهة المعنية"
-                required=""
-              />
-              <div class="invalid-feedback">
-                Please enter your shipping address.
+            <div class="row">
+              <!-- company address -->
+              <div class="col-md-6 mb-3">
+                <label for="companyaddress">عنوان الجهة المعنية</label>
+                <veeField
+                  type="text"
+                  name="companyaddress"
+                  class="form-control"
+                  id="companyaddress"
+                  placeholder="عنوان الجهة المعنية"
+                />
+                <ErrorMessage class="text-danger" name="companyaddress" />
+              </div>
+              <!-- delegate name -->
+              <div class="col-md-6 mb-3">
+                <label for="delegatename">اسم المندوب </label>
+                <veeField
+                  type="text"
+                  name="delegatename"
+                  class="form-control"
+                  id="delegatename"
+                  placeholder="اسم المندوب إذا وُجد"
+                />
+                <ErrorMessage class="text-danger" name="delegatename" />
               </div>
             </div>
 
             <hr class="mb-4" />
 
+            <!-- paymentmethods -->
             <h4 class="mb-3 fs-bold main-title fs-4">طريقة الدفع</h4>
-
+            <!-- radio buttons to check the paymentmethod -->
             <div class="d-block my-3">
-              <div class="custom-control custom-radio">
-                <input
-                  id="credit"
+              <div
+                class="custom-control custom-radio"
+                v-for="paymentMethod in allPaymentMethods"
+                :key="paymentMethod.id"
+              >
+                <veeField
+                  :id="paymentMethod.name"
                   name="paymentMethod"
                   type="radio"
+                  :value="paymentMethod.id"
                   class="custom-control-input"
-                  checked=""
-                  required=""
+                  @change="fragmentSelected"
                 />
-                <label class="custom-control-label px-1" for="credit"
-                  >دفع نقدي</label
-                >
+                <label class="custom-control-label px-1" for="credit">{{
+                  paymentMethod.name
+                }}</label>
               </div>
-              <div class="custom-control custom-radio">
-                <input
-                  id="debit"
-                  name="paymentMethod"
-                  type="radio"
-                  class="custom-control-input"
-                  required=""
-                />
-                <label class="custom-control-label px-1" for="debit"
-                  >حوالة مصرفية</label
-                >
-              </div>
-              <div class="custom-control custom-radio">
-                <input
-                  id="paypal"
-                  name="paymentMethod"
-                  type="radio"
-                  class="custom-control-input"
-                  required=""
-                />
-                <label class="custom-control-label px-1" for="paypal"
-                  >آجل</label
-                >
-              </div>
+              <ErrorMessage class="text-danger" name="paymentMethod" />
             </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="cc-name">Name on card</label>
-                <input
-                  type="text"
+            <!-- fargment payment options (if selected only) -->
+            <div class="row" v-if="fragmentPayment">
+              <div class="col-md-4 mb-3">
+                <label for="fragmentnumber">عدد الاقساط</label>
+                <veeField
+                  as="select"
+                  name="fragmentnumber"
                   class="form-control"
-                  id="cc-name"
-                  placeholder=""
-                  required=""
-                />
-                <small class="text-muted">Full name as displayed on card</small>
-                <div class="invalid-feedback">Name on card is required</div>
+                >
+                  <option value="2">2</option>
+                  <option value="4">4</option>
+                  <option value="6">6</option>
+                  <option value="8">8</option>
+                </veeField>
+                <ErrorMessage class="text-danger" name="fragmentnumber" />
               </div>
-              <div class="col-md-6 mb-3">
-                <label for="cc-number">Credit card number</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="cc-number"
-                  placeholder=""
-                  required=""
-                />
-                <div class="invalid-feedback">
-                  Credit card number is required
-                </div>
+              <div class="col-md-4 mb-3">
+                <label for="Paymentperiod">فترة السداد</label>
+                <veeField as="select" name="Paymentperiod" class="form-control">
+                  <option value="daily">يومياً</option>
+                  <option value="weekly">اسبوعياً</option>
+                  <option value="monthly">شهرياً</option>
+                </veeField>
+                <ErrorMessage class="text-danger" name="Paymentperiod" />
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-3 mb-3">
-                <label for="cc-expiration">Expiration</label>
-                <input
+              <div class="col-md-4 mb-3">
+                <label for="sponsorname">اسم الكفيل</label>
+                <veeField
                   type="text"
+                  name="sponsorname"
                   class="form-control"
-                  id="cc-expiration"
-                  placeholder=""
-                  required=""
+                  id="sponsorname"
+                  placeholder="اسم الكفيل إذا وُجد"
                 />
-                <div class="invalid-feedback">Expiration date required</div>
-              </div>
-              <div class="col-md-3 mb-3">
-                <label for="cc-expiration">CVV</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="cc-cvv"
-                  placeholder=""
-                  required=""
-                />
-                <div class="invalid-feedback">Security code required</div>
               </div>
             </div>
             <hr class="mb-4" />
+            <!-- submit button -->
             <button
               class="
                 btn btn-ss-blue
@@ -231,6 +237,7 @@
               إنهاء و تنزيل
               <i class="fas fa-hand-holding-usd"></i>
             </button>
+            <!-- back button -->
             <button
               @click.prevent="beginBillProcess"
               class="
@@ -246,7 +253,7 @@
               الرجوع للخلف
               <i class="fas fa-undo-alt"></i>
             </button>
-          </form>
+          </veeForm>
         </div>
       </div>
     </div>
@@ -254,7 +261,9 @@
 </template>
 
 <script>
-import store from "@/store";
+import { mapGetters } from "vuex";
+import axiosConfig from "../../includes/axiosConfig";
+
 export default {
   name: "newBill",
   props: {
@@ -262,17 +271,94 @@ export default {
       type: Function,
       required: true,
     },
+    scanProcess: {
+      Type: Function,
+      required: true,
+    },
     productsInBasket: {
       type: Array,
       required: true,
     },
   },
-  beforeRouteEnter(to, from, next) {
-    if (store.state.authenticated) {
-      next();
-    } else {
-      next({ name: "home" });
-    }
+  data() {
+    return {
+      generateBillSchema: {
+        companyname: "required",
+        paymentMethod: "required|numeric",
+      },
+      discount: 0,
+      totalInvoice: 0,
+      discountApplied: false,
+      allPaymentMethods: [],
+      fragmentPayment: false,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      config: "config",
+    }),
+  },
+  methods: {
+    getTotalPrice(quantity, price) {
+      return (quantity * price).toFixed(2);
+    },
+    getTotalInvoice() {
+      this.totalInvoice = 0;
+      this.productsInBasket.map((val) => {
+        this.totalInvoice += val.price * val.salesQuantity;
+      });
+    },
+    applydiscount() {
+      if (!this.discountApplied) {
+        this.discount = document.getElementById("discount").value;
+        this.discount = this.discount / 100;
+        this.totalInvoice = (
+          this.totalInvoice -
+          this.discount * this.totalInvoice
+        ).toFixed(2);
+      }
+      this.discountApplied = true;
+    },
+    discarddiscount() {
+      this.getTotalInvoice();
+      this.discountApplied = false;
+    },
+    fragmentSelected(e) {
+      if (e.currentTarget.value == 3) {
+        this.fragmentPayment = true;
+        this.generateBillSchema.fragmentnumber = "required|numeric";
+        this.generateBillSchema.Paymentperiod = "required";
+      } else {
+        this.fragmentPayment = false;
+        this.generateBillSchema.fragmentnumber = "";
+        this.generateBillSchema.Paymentperiod = "";
+      }
+    },
+    generateBill(val) {
+      val.productsInBasket = this.productsInBasket;
+      console.log(val);
+    },
+  },
+  async created() {
+    //bring all the payment methods from the database
+    await axiosConfig
+      .get("paymentMethods", this.config)
+      .then((res) => {
+        console.log(res);
+        this.allPaymentMethods = res.data.info;
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  },
+  mounted() {
+    //get the total invoice price
+    this.getTotalInvoice();
+    //to deactive the scann event
+    document.onkeydown = () => {};
+  },
+  beforeUnmount() {
+    document.onkeydown = this.scanProcess;
   },
 };
 </script>

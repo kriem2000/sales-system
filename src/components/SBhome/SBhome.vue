@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid" v-if="!generatingBill">
+  <div class="container-fluid" v-show="!generatingBill">
     <div class="row">
       <!--greeting bar-->
       <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
@@ -94,7 +94,11 @@
                 <td>{{ product.price }}</td>
                 <td :id="`totalCol${product.id}`">
                   {{
-                    getTotalPrice(product.id, product.price, product.quantity)
+                    getTotalPrice(
+                      product.id,
+                      product.price,
+                      product.quantity
+                    ) || "1"
                   }}
                 </td>
                 <td @click="removeProduct(product.id)">
@@ -106,7 +110,7 @@
         </div>
         <!--options button-->
         <div
-          v-show="allScannedProducts.length > 0"
+          v-if="allScannedProducts.length > 0"
           class="row justify-content-between mx-2 my-4"
         >
           <div class="col">
@@ -172,6 +176,7 @@
     <new-bill
       :beginBillProcess="beginBillProcess"
       :productsInBasket="productsInBasket"
+      :scanProcess="scanProcess"
     />
   </div>
 </template>
@@ -209,24 +214,25 @@ export default {
   },
   methods: {
     async scanProcess(e) {
+      console.log(e);
       let currentElement = document.getElementsByName("productId")[0];
       /* check if the current focused element is not the input for the product code */
       if (document.activeElement !== currentElement) {
-        let currentCode = typeof e.which == "number" ? e.which : e.keyCode;
+        let currentCode = e.key;
         /* to check that the enter key is pressed and the operation is done */
-        if (currentCode === 13) {
+        if (currentCode === "Enter") {
           console.log(this.lastScannedId);
           await this.axiosScan(this.lastScannedId);
           this.lastScannedId = "";
         } else {
-          this.lastScannedId += String.fromCharCode(currentCode);
+          this.lastScannedId += currentCode != "Shift" ? currentCode : "";
         }
       }
     },
     async axiosScan(id) {
-      this.scanBtn_in_submission = true;
       /* check if where the id coming from ? input or scanner device */
       if (id.type == "click") {
+        this.scanBtn_in_submission = true;
         console.log(id.type);
         id = document.getElementsByName("productId")[0].value;
         document.getElementsByName("productId")[0].value = "";
@@ -258,15 +264,16 @@ export default {
       if (number <= quantity) {
         if (totalcol != null) {
           input.classList.contains("is-invalid")
-            ? input.classList.toggle("is-invalid")
+            ? input.classList.toggle("is-invalid", false)
             : "";
 
-          totalcol.innerText = number * price;
+          totalcol.innerText = (number * price).toFixed(2);
+          return (number * price).toFixed(2);
         } else {
-          return number * price;
+          return (number * price).toFixed(2);
         }
       } else if (input != null) {
-        input.classList.toggle("is-invalid");
+        input.classList.toggle("is-invalid", true);
       }
     },
     inc(id, price, quantity) {
@@ -279,7 +286,7 @@ export default {
     },
     dec(id, price, quantity) {
       let number = document.getElementById(`ProductQuantity${id}`);
-      if (parseInt(number.value) > 1) {
+      if (parseInt(number.value) > 1 && parseInt(number.value) <= quantity) {
         number.value = parseInt(number.value) - 1;
         this.getTotalPrice(id, price, quantity);
       }
@@ -344,13 +351,14 @@ export default {
         aux = document.getElementById(`ProductQuantity${val.id}`).value;
         if (aux <= val.quantity) {
           val.salesQuantity = aux;
-          console.log(this.productsInBasket);
           this.productsInBasket.push(val);
         }
-        this.allScannedProducts.length == this.productsInBasket.length
-          ? this.beginBillProcess()
-          : "";
       });
+      this.allScannedProducts.length == this.productsInBasket.length
+        ? this.beginBillProcess()
+        : this.errorMessage(
+            "الرجاء مراجعة المدخلات قبل البدء في تصدير الفاتورة"
+          );
     },
     beginBillProcess() {
       this.generatingBill = !this.generatingBill;
