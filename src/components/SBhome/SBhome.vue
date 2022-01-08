@@ -255,7 +255,7 @@ export default {
               this.errorMessage("هذا العنصر غير موجود, او تم نفاذ الكمية");
               return;
             })
-        : "";
+        : (this.scanBtn_in_submission = false);
     },
     getTotalPrice(id, price, quantity) {
       let input = document.getElementById(`ProductQuantity${id}`);
@@ -311,11 +311,12 @@ export default {
       }
     },
     async restart() {
-      await this.confirmMessage(
-        "سيتم الغاء كل العناصر الموجودة, وسيتم البدء من جديد"
-      );
+      await this.confirmMessage("سيتم البدء من جديد");
       console.log(this.restartBtn);
-      this.restartBtn ? (this.allScannedProducts = []) : "";
+      if (this.restartBtn) {
+        this.allScannedProducts = [];
+        this.generatingBill = false;
+      }
     },
     errorMessage(msg) {
       this.$swal.fire({
@@ -360,8 +361,13 @@ export default {
             "الرجاء مراجعة المدخلات قبل البدء في تصدير الفاتورة"
           );
     },
-    beginBillProcess() {
-      this.generatingBill = !this.generatingBill;
+    beginBillProcess(fromScratch = false, fromScratchWithBill = true) {
+      if (fromScratch == true) {
+        this.restart();
+      }
+      if (fromScratchWithBill == true) {
+        this.generatingBill = !this.generatingBill;
+      }
     },
   },
   activated() {

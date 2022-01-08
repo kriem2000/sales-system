@@ -2,7 +2,7 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
-const API_URL = process.env.API_URL || "http://127.0.0.1:8000/api/";
+const API_URL = process.env.API_URL || "http://sales-system-api.com/api/";
 
 export default axios.create({
   baseURL: API_URL,

@@ -23,6 +23,8 @@ import "@fortawesome/fontawesome-free/js/all.js";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
+import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
+
 /*check if the user is authenticated before vue initialize*/
 if (localStorage.getItem("ss-token") != null) {
   store.dispatch("checkAuthenticated").then(() => {
@@ -41,6 +43,7 @@ function creatVueInctance() {
   app.use(VeeValidatePlugin);
   app.use(VueAxios, axios);
   app.use(VueSweetalert2);
+  app.use(Vue3SimpleHtml2pdf);
 
   app.mount("#app");
 }

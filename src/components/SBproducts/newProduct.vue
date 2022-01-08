@@ -373,9 +373,9 @@ export default {
           this.in_submission = false;
           console.log(err.response);
         });
-      // setTimeout(() => {
-      //   this.show_alert = false;
-      // }, 5000);
+      setTimeout(() => {
+        this.show_alert = false;
+      }, 5000);
     },
   },
   /* lifeCycle Hooks */

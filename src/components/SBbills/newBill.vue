@@ -1,5 +1,9 @@
 <template>
-  <div class="container-fluid bg-light m-2 border border-1 shadow-sm rounded">
+  <!-- bill form && checkout -->
+  <div
+    class="container-fluid bg-light m-2 border border-1 shadow-sm rounded"
+    v-if="!showInvoice"
+  >
     <div class="container">
       <!-- title and image -->
       <div class="py-5 text-center">
@@ -239,7 +243,7 @@
             </button>
             <!-- back button -->
             <button
-              @click.prevent="beginBillProcess"
+              @click.prevent="beginBillProcess(false, true)"
               class="
                 btn btn-success
                 text-white
@@ -258,11 +262,18 @@
       </div>
     </div>
   </div>
+  <!-- invoice template -->
+  <billTemplate
+    v-if="showInvoice"
+    :beginBillProcess="beginBillProcess"
+    :dataToInvoice="dataToInvoice"
+  />
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import axiosConfig from "../../includes/axiosConfig";
+import axiosConfig from "@/includes/axiosConfig";
+import billTemplate from "@/components/SBbills/billTemplate.vue";
 
 export default {
   name: "newBill",
@@ -280,6 +291,9 @@ export default {
       required: true,
     },
   },
+  components: {
+    billTemplate,
+  },
   data() {
     return {
       generateBillSchema: {
@@ -291,6 +305,8 @@ export default {
       discountApplied: false,
       allPaymentMethods: [],
       fragmentPayment: false,
+      showInvoice: false,
+      dataToInvoice: [],
     };
   },
   computed: {
@@ -307,6 +323,7 @@ export default {
       this.productsInBasket.map((val) => {
         this.totalInvoice += val.price * val.salesQuantity;
       });
+      this.totalInvoice = this.totalInvoice.toFixed(2);
     },
     applydiscount() {
       if (!this.discountApplied) {
@@ -320,7 +337,9 @@ export default {
       this.discountApplied = true;
     },
     discarddiscount() {
+      /* reset all values */
       this.getTotalInvoice();
+      this.discount = 0;
       this.discountApplied = false;
     },
     fragmentSelected(e) {
@@ -334,9 +353,23 @@ export default {
         this.generateBillSchema.Paymentperiod = "";
       }
     },
-    generateBill(val) {
+    async generateBill(val) {
+      /* adding all product in the basket to the request */
       val.productsInBasket = this.productsInBasket;
+      /* adding the discount% if exists to the request otherwise add 0 */
+      val.discount = this.discount;
       console.log(val);
+      /* start the sale process from the backend */
+      await axiosConfig
+        .post("saleProduct", val, this.config)
+        .then((res) => {
+          console.log(res);
+          this.showInvoice = true;
+          this.dataToInvoice = res.data.info;
+        })
+        .catch((err) => {
+          console.log(err.response);
+        });
     },
   },
   async created() {
@@ -349,6 +382,7 @@ export default {
       })
       .catch((err) => {
         console.log(err.response);
+        return;
       });
   },
   mounted() {
