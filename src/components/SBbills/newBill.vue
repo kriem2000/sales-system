@@ -44,7 +44,7 @@
                 >
               </div>
               <span class="text-muted">
-                {{ getTotalPrice(product.salesQuantity, product.price) }}
+                {{ getTotalPrice(product.salesQuantity, product.sale_price) }}
                 <b> LYD</b>
               </span>
             </li>
@@ -230,17 +230,19 @@
                 btn btn-ss-blue
                 text-white
                 font-bold
-                d-inline
                 float-end
-                btn-sm btn-block
+                btn-sm
                 mb-3
                 mx-2
               "
               type="submit"
+              :disabled="in_submission"
+              v-show="!in_submission"
             >
               إنهاء و تنزيل
               <i class="fas fa-hand-holding-usd"></i>
             </button>
+            <loading v-show="in_submission" />
             <!-- back button -->
             <button
               @click.prevent="beginBillProcess(false, true)"
@@ -250,9 +252,10 @@
                 font-bold
                 d-inline
                 float-end
-                btn-sm btn-block
+                btn-sm
                 mb-3
               "
+              :disabled="in_submission"
             >
               الرجوع للخلف
               <i class="fas fa-undo-alt"></i>
@@ -274,6 +277,7 @@
 import { mapGetters } from "vuex";
 import axiosConfig from "@/includes/axiosConfig";
 import billTemplate from "@/components/SBbills/billTemplate.vue";
+import loading from "@/components/loading.vue";
 
 export default {
   name: "newBill",
@@ -293,6 +297,7 @@ export default {
   },
   components: {
     billTemplate,
+    loading,
   },
   data() {
     return {
@@ -307,6 +312,7 @@ export default {
       fragmentPayment: false,
       showInvoice: false,
       dataToInvoice: [],
+      in_submission: false,
     };
   },
   computed: {
@@ -321,7 +327,7 @@ export default {
     getTotalInvoice() {
       this.totalInvoice = 0;
       this.productsInBasket.map((val) => {
-        this.totalInvoice += val.price * val.salesQuantity;
+        this.totalInvoice += val.sale_price * val.salesQuantity;
       });
       this.totalInvoice = this.totalInvoice.toFixed(2);
     },
@@ -354,6 +360,7 @@ export default {
       }
     },
     async generateBill(val) {
+      this.in_submission = true;
       /* adding all product in the basket to the request */
       val.productsInBasket = this.productsInBasket;
       /* adding the discount% if exists to the request otherwise add 0 */
@@ -365,10 +372,13 @@ export default {
         .then((res) => {
           console.log(res);
           this.showInvoice = true;
-          this.dataToInvoice = res.data.info;
+          this.dataToInvoice = res.data.info[0];
+          this.in_submission = false;
         })
         .catch((err) => {
           console.log(err.response);
+          this.in_submission = false;
+          return;
         });
     },
   },

@@ -10,8 +10,9 @@
                 class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4"
                 id="registrationTitle"
               >
-                إضافة مستخدم جديد
+                إضافة فاتورة مستوردة
               </p>
+              <!--new exported bill form -->
               <div
                 class="
                   col-md-10 col-lg-6 col-xl-5
@@ -19,7 +20,6 @@
                   position-relative
                 "
               >
-                <!-- user add form -->
                 <vee-form
                   class="
                     position-absolute
@@ -28,56 +28,41 @@
                     translate-middle
                     w-75
                   "
-                  @submit="addNewUser"
-                  :validationSchema="registerSchema"
+                  @submit="registerNewExportedBill"
+                  :validationSchema="addNewExprotedBill"
                 >
                   <div class="d-flex flex-row mb-4">
-                    <i class="fas fa-user ms-3 mt-3"></i>
+                    <i class="fas fa-file-invoice ms-3 mt-3"></i>
                     <div class="form-floating flex-fill mb-0">
                       <vee-field
-                        name="name"
+                        name="billName"
                         type="text"
                         class="form-control"
-                        id="name"
-                        placeholder="name"
-                      />
-                      <ErrorMessage class="text-danger font-bold" name="name" />
-                      <label for="floatingInput">الاسم</label>
-                    </div>
-                  </div>
-                  <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-user-friends ms-3"></i>
-                    <div class="form-floating flex-fill mb-0">
-                      <vee-field
-                        name="lastname"
-                        type="text"
-                        class="form-control"
-                        id="lastname"
-                        placeholder="lastname"
+                        id="billName"
+                        placeholder="billName"
                       />
                       <ErrorMessage
                         class="text-danger font-bold"
-                        name="lastname"
+                        name="billName"
                       />
-                      <label for="floatingInput">اللقب</label>
+                      <label for="floatingInput">اسم الفاتورة</label>
                     </div>
                   </div>
-
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-envelope ms-3 fa-fw"></i>
+                    <i class="fas fa-building ms-3"></i>
                     <div class="form-floating flex-fill mb-0">
                       <vee-field
-                        name="email"
-                        type="email"
+                        name="exporterName"
+                        type="text"
                         class="form-control"
-                        id="email"
-                        placeholder="User's email"
+                        id="exporterName"
+                        placeholder="exporterName"
                       />
                       <ErrorMessage
                         class="text-danger font-bold"
-                        name="email"
+                        name="exporterName"
                       />
-                      <label for="floatingInput">بريد الالكتروني</label>
+                      <label for="floatingInput">اسم الجهة المصدرة</label>
                     </div>
                   </div>
 
@@ -85,59 +70,35 @@
                     <i class="fas fa-phone-alt ms-3 fa-fw"></i>
                     <div class="form-floating flex-fill mb-0">
                       <vee-field
-                        name="phone"
+                        name="exporterPhone"
                         type="text"
                         class="form-control"
-                        id="phone"
-                        placeholder="Phone number"
+                        id="exporterPhone"
+                        placeholder="exporter Phone"
                       />
                       <ErrorMessage
                         class="text-danger font-bold"
-                        name="phone"
+                        name="exporterPhone"
                       />
-                      <label for="floatingInput">الهاتف</label>
+                      <label for="floatingInput">رقم الجهة المصدرة</label>
                     </div>
                   </div>
 
                   <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-key ms-3 fa-fw"></i>
+                    <i class="fas fa-calendar-alt ms-3 fa-fw"></i>
                     <div class="form-floating flex-fill mb-0">
                       <vee-field
-                        name="password"
-                        type="password"
+                        name="billDate"
+                        type="date"
                         class="form-control"
-                        id="password"
-                        placeholder="Phone number"
+                        id="billDate"
+                        placeholder="bill Date"
                       />
                       <ErrorMessage
                         class="text-danger font-bold"
-                        name="password"
+                        name="billDate"
                       />
-                      <label for="floatingInput">كلمة السر</label>
-                    </div>
-                  </div>
-
-                  <div class="d-flex flex-row align-items-center mb-4">
-                    <i class="fas fa-user-tag ms-3 fa-fw"></i>
-                    <div class="form-floating flex-fill mb-0">
-                      <vee-field
-                        name="role"
-                        as="select"
-                        class="form-select font-bold p-3"
-                        aria-label="Default select example"
-                        v-model="selected"
-                      >
-                        <option
-                          v-for="role in allRoles"
-                          :key="role"
-                          :value="role"
-                        >
-                          {{ role }}
-                        </option>
-                      </vee-field>
-
-                      <ErrorMessage class="text-danger font-bold" name="role" />
-                      <label for="floatingSelect">صلاحية المستخدم</label>
+                      <label for="floatingInput">تاريخ الفاتورة</label>
                     </div>
                   </div>
 
@@ -148,13 +109,14 @@
                       :class="{ 'btn-light': in_submission }"
                       :disabled="in_submission"
                     >
-                      <p v-if="!in_submission" class="m-0">اضافة مستخدم جديد</p>
+                      <p v-if="!in_submission" class="m-0">اضافة</p>
                       <loading v-else />
                     </button>
                     <button type="reset" class="d-none" id="resetForm"></button>
                   </div>
                 </vee-form>
               </div>
+              <!-- exported bill image -->
               <div
                 class="
                   col-md-10 col-lg-6 col-xl-7
@@ -164,7 +126,7 @@
                 "
               >
                 <img
-                  src="img/undraw_authentication_fsn5.png"
+                  src="img/Telecommuting-pana.png"
                   class="img-fluid"
                   alt="Sample image"
                 />
@@ -182,24 +144,24 @@
 </template>
 
 <script>
+import loading from "@/components/loading.vue";
 import axiosConfig from "@/includes/axiosConfig";
-import loading from "../loading.vue";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "newUser",
-  components: {
-    loading,
+  components: { loading },
+  name: "newImportedBill",
+  computed: {
+    ...mapGetters({
+      config: "config",
+    }),
   },
   data() {
     return {
-      registerSchema: {
-        name: "required|alpha_spaces|max:100",
-        lastname: "alpha_spaces|max:100",
-        email: "required|email",
-        password: "required|min:5|max:20",
-        phone: "digits:10",
-        role: "required",
+      addNewExprotedBill: {
+        billName: "required|max:255",
+        exporterName: "required|max:255",
+        exporterPhone: "numeric|min:10",
       },
       in_submission: false,
       show_alert: false,
@@ -208,42 +170,32 @@ export default {
       alert_icon: "",
     };
   },
-  computed: {
-    ...mapGetters({
-      allRoles: "allRoles",
-      config: "config",
-    }),
-  },
   methods: {
-    async addNewUser(values) {
+    async registerNewExportedBill(val) {
       this.in_submission = true;
       await axiosConfig
-        .post("adduser", values, this.config)
-        .then((res) => {
-          console.log(res.data);
-          this.in_submission = false;
+        .post("addExportedBill", val, this.config)
+        .then(() => {
           this.show_alert = true;
-          this.alert_icon = "fas fa-check-circle ms-1";
-          this.alert_class = "alert alert-primary";
-          this.alert_message = "تم تسجيل المستخدم بنجاح";
+          this.alert_icon = "fas fa-check-square";
+          this.alert_message = "تم ادخال الفاتورة بنجاح";
+          this.alert_class = "alert alert-primary px-1";
+          this.in_submission = false;
           document.getElementById("resetForm").click();
         })
-        .catch((error) => {
-          console.log(error.response);
-          this.in_submission = false;
+        .catch((err) => {
+          console.log(err.response);
           this.show_alert = true;
-          this.alert_class = "alert alert-danger";
-          this.alert_icon = "fas fa-exclamation-circle ms-1";
-          this.alert_message = "لقد حدث خطأ او المستخدم موجود بالفعل";
+          this.alert_icon = "fas fa-exclamation-triangle";
+          this.alert_message = "الرجاء مراجعة المدخلات";
+          this.alert_class = "alert alert-danger px-1";
+          this.in_submission = false;
+          return;
         });
       setTimeout(() => {
         this.show_alert = false;
-      }, 4000);
+      }, 5000);
     },
-  },
-  async created() {
-    console.log(this.config);
-    await this.$store.dispatch("getAllRole");
   },
 };
 </script>

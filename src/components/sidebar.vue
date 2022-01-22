@@ -3,7 +3,6 @@
     <div
       class="d-flex flex-column flex-shrink-0 p-4 text-white bg-ss-blue"
       id="sidebar"
-      style="width: 280px"
     >
       <!--sidebar brand-->
       <router-link
@@ -56,10 +55,56 @@
           </a>
         </li>
         <!--sidebar bills-->
-        <li class="my-1" v-if="hasRole('admin') || hasRole('accountant')">
+        <li
+          class="my-1"
+          v-if="
+            hasRole('admin') ||
+            hasRole('sales manager') ||
+            hasRole('accountant')
+          "
+        >
           <a href="#" class="nav-link text-white">
             <i class="fas fa-wallet mx-1"></i>
-            الفواتير
+            <button
+              class="btn btn-toggle rounded text-white p-0 ps-1 mb-1"
+              data-bs-toggle="collapse"
+              data-bs-target="#bills-collapse"
+              aria-expanded="true"
+            >
+              الفواتير
+            </button>
+            <div class="collapse" id="bills-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal small p-0 pe-2">
+                <!-- add a new imported bill -->
+                <li v-if="hasRole('admin') || hasRole('sales manager')">
+                  <a
+                    href="#"
+                    class="link-light rounded"
+                    @click.prevent="
+                      changeDynamicComponent('newImportedBill');
+                      changeActiveComponent($event);
+                    "
+                  >
+                    <i class="fas fa-plus m-1"></i>
+                    إضافة فاتورة مستوردة
+                  </a>
+                </li>
+                <!-- all the bills list -->
+                <li>
+                  <a
+                    href="#"
+                    class="link-light rounded"
+                    @click.prevent="
+                      changeDynamicComponent('billsList');
+                      changeActiveComponent($event);
+                    "
+                  >
+                    <i class="fas fa-list-alt mx-1"></i>
+                    قائمة الفواتير
+                  </a>
+                </li>
+              </ul>
+            </div>
           </a>
         </li>
         <!--sidebar products-->
@@ -84,7 +129,7 @@
               <li v-if="hasRole('admin') || hasRole('sales manager')">
                 <a
                   href="#"
-                  class="link-dark rounded"
+                  class="link-light rounded"
                   @click.prevent="
                     changeDynamicComponent('newProduct');
                     changeActiveComponent($event);
@@ -102,7 +147,7 @@
                   hasRole('sales manager')
                 "
               >
-                <a href="#" class="link-dark rounded">
+                <a href="#" class="link-light rounded">
                   <i class="fas fa-search m-1"></i>
                   البحث المتقدم</a
                 >
@@ -127,7 +172,7 @@
               <li>
                 <a
                   href="#"
-                  class="link-dark rounded"
+                  class="link-light rounded"
                   @click.prevent="
                     changeDynamicComponent('newUser');
                     changeActiveComponent($event);
@@ -141,7 +186,7 @@
                 <!--Users List-->
                 <a
                   href="#"
-                  class="link-dark rounded"
+                  class="link-light rounded"
                   @click.prevent="
                     changeDynamicComponent('usersList');
                     changeActiveComponent($event);

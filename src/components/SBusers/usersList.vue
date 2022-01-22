@@ -45,7 +45,7 @@
           <label for="filterBy">البحث بواسطة </label>
         </p>
         <select name="filterBy" id="filterBy" @change.prevent="filterusers">
-          <option value="%">الكل</option>
+          <option>الكل</option>
           <option v-for="role in allRoles" :key="role" :value="role">
             {{ role }}
           </option>
@@ -185,9 +185,6 @@ export default {
       config: "config",
     }),
   },
-  async created() {
-    this.fetchAllUsers();
-  },
   async activated() {
     this.fetchAllUsers();
   },
@@ -195,7 +192,7 @@ export default {
     async fetchAllUsers() {
       /*to get all the users with roles*/
       await axiosConfig
-        .get("allUsers/%", this.config)
+        .get("allUsers", this.config)
         .then((res) => {
           console.log(res.data);
           this.allUsersWithRoles = res.data.info || "no results found";
@@ -215,7 +212,8 @@ export default {
       this.allUsersWithRoles = null;
       this.userslength = 0;
       let role = document.getElementById("filterBy").value;
-      await axiosConfig.get(`allUsers/${role}`, this.config).then((res) => {
+      role = role != null ? `/${role}` : "";
+      await axiosConfig.get(`allUsers${role}`, this.config).then((res) => {
         console.log(res.data);
         this.allUsersWithRoles = res.data.info || "no results found";
         this.userslength = res.data.message;

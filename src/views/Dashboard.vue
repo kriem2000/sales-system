@@ -1,20 +1,14 @@
 <template>
-  <div class="container-fluid p-0">
+  <div class="container p-0">
     <div class="row justify-content-center">
-      <button
-        class="btn btn-ss-blue text-white d-xl-none float-start"
-        @click.prevent="showSideBar"
-      >
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="col-lg-2 m-0 p-0 d-none d-xl-block" id="sidebarContainer">
+      <div class="col-lg-2 d-block" id="sidebarContainer">
         <!--sidebar-->
         <sidebar
           :dynamic_component="dynamic_component"
           :changeDynamicComponent="changeDynamicComponent"
         />
       </div>
-      <div class="col-sm-12 col-md-12 col-lg-10 col-xl-8">
+      <div class="col-lg-10">
         <!--dynamic content goes here-->
         <keep-alive>
           <component
@@ -35,10 +29,21 @@ import SBdashboard from "@/components/SBdashboard.vue";
 import newUser from "@/components/SBusers/newUser.vue";
 import usersList from "@/components/SBusers/usersList.vue";
 import newProduct from "@/components/SBproducts/newProduct.vue";
+import newImportedBill from "@/components/SBbills/newImportedBill.vue";
+import billsList from "@/components/SBbills/billsList.vue";
 
 export default {
   name: "dashboard",
-  components: { sidebar, SBhome, SBdashboard, newUser, usersList, newProduct },
+  components: {
+    sidebar,
+    SBhome,
+    SBdashboard,
+    newUser,
+    usersList,
+    newProduct,
+    newImportedBill,
+    billsList,
+  },
   data() {
     return {
       dynamic_component: "SBhome",

@@ -34,16 +34,28 @@
             <div class="invoice">
               <div style="min-width: 600px">
                 <header>
-                  <div class="row">
-                    <div class="col text-end p-0">
-                      <img class="img-fluid" src="/img/invoice-logo.jpeg" />
+                  <div class="row justify-content-center">
+                    <div class="col-6 text-center">
+                      <img
+                        class="img-fluid"
+                        :src="`data:image/png;base64,${file}`"
+                      />
+                      <p>{{ bill.bill_barcode }}</p>
                     </div>
-                    <div class="col company-details text-start m-5">
+                  </div>
+                  <div class="row">
+                    <div class="col text-end me-3">
+                      <img
+                        class="img-fluid w-40"
+                        src="/img/invoice-logo.jpeg"
+                      />
+                    </div>
+                    <div class="col company-details text-start m-3">
                       <h2 class="name">
                         <a target="_blank"> WASFAT ALSHIFA </a>
                       </h2>
                       <div>benghazi,libya</div>
-                      <div>(+) 218 913898107</div>
+                      <div>913898107 218 (+)</div>
                       <div>ibrahim@wasfat-alshifa.com</div>
                     </div>
                   </div>
@@ -54,7 +66,9 @@
                       <div class="text-gray-light fs-5 fw-bold">
                         فاتورة بإسم : {{ bill.company_name }}
                       </div>
-                      <div class="address">{{ bill.company_address }}</div>
+                      <div class="address">
+                        العنوان : {{ bill.company_address }}
+                      </div>
                       <div class="email">
                         <a>اسم المُشتري : {{ bill.buyer_name }}</a>
                       </div>
@@ -73,16 +87,25 @@
                         >
                       </div>
                     </div>
-                    <div class="col invoice-details text-center">
+                    <div class="col invoice-details text-start">
                       <h1 class="invoice-id">N-INVOICE {{ bill.id }}</h1>
                       <div class="date">
                         حالة الفاتورة :
                         {{
-                          bill.payment_method_id == 1
-                            ? "مدفوع"
-                            : "في انتظار الدفع"
+                          bill.bill_status_id == 1 ? "مدفوع" : "في انتظار الدفع"
                         }}
                       </div>
+                      <template v-if="bill.payment_method_id == 3">
+                        <div class="date">
+                          يتم الدفع :
+                          {{ bill.payment_period == "weekly" ? "اسبوعيا" : "" }}
+                          {{ bill.payment_period == "monthly" ? "شهريا" : "" }}
+                          {{ bill.payment_period == "daily" ? "يوميا" : "" }}
+                        </div>
+                        <div class="date">
+                          عدد الدفعات : {{ bill.fragments_number }}
+                        </div>
+                      </template>
                     </div>
                   </div>
                   <table id="table">
@@ -97,7 +120,7 @@
                     </thead>
                     <tbody>
                       <tr
-                        v-for="(product, index) in productsInBasket"
+                        v-for="(product, index) in products"
                         :key="product.id"
                       >
                         <td class="no">
@@ -106,11 +129,13 @@
                         <td class="text-end">
                           <h3>{{ product.name }}</h3>
                         </td>
-                        <td class="unit">{{ product.price }}</td>
-                        <td class="qty">{{ product.salesQuantity }}</td>
+                        <td class="unit">{{ product.sale_price }}</td>
+                        <td class="qty">{{ product.pivot.quantity }}</td>
                         <td class="total">
                           {{
-                            (product.price * product.salesQuantity).toFixed(2)
+                            (
+                              product.sale_price * product.pivot.quantity
+                            ).toFixed(2)
                           }}
                           LYD
                         </td>
@@ -123,19 +148,25 @@
                         <td colspan="2">الإجمالي :</td>
                         <td>{{ bill.original_total }} LYD</td>
                       </tr>
-                      <tr>
+                      <tr v-if="bill.returned == 1">
                         <td colspan="2"></td>
-                        <td colspan="2">التخفيض</td>
-                        <td>{{ bill.applied_discount }} %</td>
+                        <td colspan="2">تم إرجاع :</td>
+                        <td>{{ bill.total_returned }} LYD</td>
                       </tr>
                       <tr>
                         <td colspan="2"></td>
-                        <td colspan="2">الإجمالي مع التخفيض</td>
+                        <td colspan="2">التخفيض</td>
+                        <td>{{ bill.applied_discount * 100 }} %</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2">الإجمالي النهائي</td>
                         <td>
                           {{
-                            bill.original_total -
                             (
-                              bill.original_total * bill.applied_discount
+                              bill.original_total -
+                              bill.original_total * bill.applied_discount -
+                              bill.total_returned
                             ).toFixed(2)
                           }}
                           LYD
@@ -147,8 +178,15 @@
                     <div class="thanks">شكرا لك !</div>
                     <div class="notices mb-5">
                       <div class="fs-4">ملاحظات :</div>
-                      <div class="notice">لا توجد ملاحظات حول هذه الفاتورة</div>
+                      <div class="notice">
+                        {{
+                          bill.desc == ""
+                            ? "لا توجد ملاحظات حول هذه الفاتورة"
+                            : bill.desc
+                        }}
+                      </div>
                     </div>
+                    <div class="mb-5">توقيع المُشتري: ___________________</div>
                     <footer class="d-flex flex-row justify-content-between">
                       <div>
                         تاريخ الفاتورة : {{ formatDate(bill.created_at) }}
@@ -182,9 +220,9 @@ export default {
   },
   data() {
     return {
-      productsInBasket: this.dataToInvoice.requested_info.productsInBasket,
-      bill: this.dataToInvoice.bill,
-      sale: this.dataToInvoice.sale,
+      products: this.dataToInvoice.sale.products,
+      bill: this.dataToInvoice,
+      file: this.dataToInvoice.file,
       pdfOptions: {
         margin: 5,
         image: {
@@ -194,7 +232,9 @@ export default {
         pagebreak: {
           avoid: ["#footer", "#footer-2"],
         },
-        html2canvas: { scale: 3 },
+        html2canvas: {
+          scale: 3,
+        },
         jsPDF: {
           unit: "mm",
           format: "a4",
@@ -216,4 +256,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.w-40 {
+  width: 40% !important;
+}
+</style>

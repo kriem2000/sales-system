@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid" v-show="!generatingBill">
+  <div class="container" v-show="!generatingBill">
     <div class="row">
       <!--greeting bar-->
       <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
@@ -12,7 +12,7 @@
       <div class="col-lg-8 col-md-12 col-sm-12">
         <div
           class="
-            conatainer-fluid
+            conatainer
             shadow
             border
             table-responsive
@@ -53,12 +53,12 @@
                 :key="product.id"
               >
                 <td>{{ product.name }}</td>
-                <td>
+                <td class="d-flex flex-row">
                   <button
                     @click.prevent="
-                      dec(product.id, product.price, product.quantity)
+                      dec(product.id, product.sale_price, product.quantity)
                     "
-                    class="btn btn-sm btn-outline-ss-blue-table"
+                    class="btn btn-sm btn-outline-ss-blue-table py-0"
                   >
                     <i class="fas fa-minus"></i>
                   </button>
@@ -78,25 +78,29 @@
                     :max="product.quantity"
                     value="1"
                     @change="
-                      getTotalPrice(product.id, product.price, product.quantity)
+                      getTotalPrice(
+                        product.id,
+                        product.sale_price,
+                        product.quantity
+                      )
                     "
                   />
                   <button
                     @click.prevent="
-                      inc(product.id, product.price, product.quantity)
+                      inc(product.id, product.sale_price, product.quantity)
                     "
-                    class="btn btn-sm btn-outline-ss-blue-table"
+                    class="btn btn-sm btn-outline-ss-blue-table py-0"
                   >
                     <i class="fas fa-plus"></i>
                   </button>
                 </td>
                 <td>{{ product.quantity }}</td>
-                <td>{{ product.price }}</td>
+                <td>{{ product.sale_price }}</td>
                 <td :id="`totalCol${product.id}`">
                   {{
                     getTotalPrice(
                       product.id,
-                      product.price,
+                      product.sale_price,
                       product.quantity
                     ) || "1"
                   }}
