@@ -139,7 +139,7 @@
                   اضافة عنصر جديد
                 </a>
               </li>
-              <!-- search for products -->
+              <!-- index and search for products -->
               <li
                 v-if="
                   hasRole('seller') ||
@@ -147,9 +147,16 @@
                   hasRole('sales manager')
                 "
               >
-                <a href="#" class="link-light rounded">
-                  <i class="fas fa-search m-1"></i>
-                  البحث المتقدم</a
+                <a
+                  @click.prevent="
+                    changeDynamicComponent('productsList');
+                    changeActiveComponent($event);
+                  "
+                  href="#"
+                  class="link-light rounded"
+                >
+                  <i class="fas fa-capsules m-1"></i>
+                  قائمة المنتجات</a
                 >
               </li>
             </ul>
@@ -211,7 +218,14 @@
         </li>
         <!--sidebar profile-->
         <li class="my-1">
-          <a href="#" class="nav-link text-white">
+          <a
+            href="#"
+            class="nav-link text-white"
+            @click.prevent="
+              changeDynamicComponent('userStatistics');
+              changeActiveComponent($event);
+            "
+          >
             <i class="far fa-user-circle mx-1"></i>
             الملف الشخصي
           </a>

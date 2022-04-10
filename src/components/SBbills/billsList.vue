@@ -1,16 +1,53 @@
 <template>
   <div class="container mt-5" v-if="!showInvoice">
-    <div class="d-flex flex-row p-3 pb-5 w-50">
-      <!-- من
-      <input
-        type="date"
-        class="form-control m-3 d-inline"
-        id="from"
-        placeholder="من"
-      />
-      الي <input type="date" class="form-control m-3" id="to" />
-      <button class="btn btm-sm btn-outline-ss-blue m-3">بحث</button> -->
+    <!-- v-if="allBills.length > 0" -->
+    <!-- fliters for dates -->
+    <!-- title -->
+    <p
+      class="text-end h1 fw-bold mb-2 mx-1 mx-md-4 mt-4"
+      id="registrationTitle"
+    >
+      قائمة الفواتير
+    </p>
+    <div class="d-flex flex-row w-100">
+      <div class="form-group mx-2">
+        <label for="">من</label>
+        <input
+          type="date"
+          class="form-control d-inline"
+          id="fromDate"
+          placeholder="من"
+        />
+      </div>
+      <div class="form-group mx-2">
+        <label for="">الي </label>
+        <input type="date" class="form-control" id="toDate" />
+      </div>
+      <div class="form-group mx-2">
+        <label for="">حالة الدفع</label>
+        <select id="filterBillStatus" class="form-control">
+          <option selected value="">الكل</option>
+          <option value="1">تم الدفع</option>
+          <option value="2">في الانتظار</option>
+        </select>
+      </div>
+      <div class="form-group mx-2">
+        <label for="">طريقة الدفع</label>
+        <select id="filterBillPayment" class="form-control">
+          <option selected value="">الكل</option>
+          <option value="1">نقدي</option>
+          <option value="2">حوالة مصرفية</option>
+          <option value="3">دفع آجل</option>
+        </select>
+      </div>
+      <button
+        @click.prevent="fetchBills"
+        class="btn btm-sm btn-outline-ss-blue float-start m-3 mt-4"
+      >
+        بحث
+      </button>
     </div>
+    <hr class="my-4" />
     <div class="row">
       <div
         class="card border-0 border-end border-5 mx-3"
@@ -173,13 +210,13 @@
                 <a
                   class="page-link"
                   v-if="index == 0"
-                  @click.prevent="fetchBills(link.url)"
+                  @click.prevent="fetchBills($event, link.url)"
                   :class="{ 'd-none': link.url == null }"
                   >السابق</a
                 >
                 <a
                   v-if="index != 0 && index != allLinks.length - 1"
-                  @click.prevent="fetchBills(link.url)"
+                  @click.prevent="fetchBills($event, link.url)"
                   class="page-link"
                   :class="{ 'active-link': link.active }"
                   >{{ link.label }}</a
@@ -187,7 +224,7 @@
                 <a
                   class="page-link"
                   v-if="index == allLinks.length - 1"
-                  @click.prevent="fetchBills(link.url)"
+                  @click.prevent="fetchBills($event, link.url)"
                   :class="{ 'd-none': link.url == null }"
                   >التالي</a
                 >
@@ -198,15 +235,19 @@
       </div>
     </div>
     <!-- loading screen -->
-    <div class="position-relative mt-5 text-center">
-      <div class="position-absolute top-50 start-50 translate-middle">
-        <loading v-if="allBills.length == 0 && in_submission" />
-        <div class="mt-5" v-if="allBills.length == 0 && !in_submission">
-          <img
-            src="/img/404 error with person looking for-rafiki.png"
-            class="img-fluid w-50"
-          />
-          <p class="text-muted">لاتوجد فواتير لحد الان</p>
+    <div class="row">
+      <div class="col">
+        <div class="position-relative text-center">
+          <div class="">
+            <loading v-if="allBills.length == 0 && in_submission" />
+            <div class="5" v-if="allBills.length == 0 && !in_submission">
+              <img
+                src="/img/404 error with person looking for-rafiki.png"
+                class="img-fluid w-50"
+              />
+              <p class="text-muted">لاتوجد فواتير لحد الان</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -283,9 +324,27 @@ export default {
       let aux = new Date(date);
       return `${aux.getFullYear()}-${aux.getMonth() + 1}-${aux.getDate()}`;
     },
-    async fetchBills(
-      baseURL = `http://sales-system-api.com/api/allBills?page=${this.currentPage}`
-    ) {
+    async fetchBills(e, baseURL = null) {
+      /* to handle the filter section and avoid cors policy mistake */
+      let from = document.getElementById("fromDate").value || "empty";
+      from != null ? (from = `/${from}`) : (from = ``);
+      let to = document.getElementById("toDate").value || "empty";
+      to != null ? (to = `/${to}`) : (to = ``);
+      let paymentStatus =
+        document.getElementById("filterBillStatus").value || "empty";
+      paymentStatus != null
+        ? (paymentStatus = `/${paymentStatus}`)
+        : (paymentStatus = ``);
+      let paymentMethod =
+        document.getElementById("filterBillPayment").value || "empty";
+      paymentMethod != null
+        ? (paymentMethod = `/${paymentMethod}`)
+        : (paymentMethod = ``);
+
+      baseURL == null
+        ? (baseURL = `http://sales-system-api.com/api/allBills${from}${to}${paymentStatus}${paymentMethod}?page=${this.currentPage}`)
+        : "";
+      /* send the request */
       this.in_submission = true;
       await axiosConfig({
         method: "get",
@@ -368,14 +427,19 @@ export default {
 </script>
 
 <style scoped>
+#registrationTitle {
+  color: #216bae;
+  font-size: 35px;
+}
+
 .card {
   border-color: #5db1ff !important;
-  transition: all 500ms;
+  transition: all 0.5s;
 }
 
 .card:hover {
   border: 1px solid rgba(0, 0, 0, 0.125) !important;
-  transition: all 0s;
+  transition: all 0.5s;
 }
 
 .card-title {

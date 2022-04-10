@@ -111,6 +111,7 @@
             v-if="showReturnButton"
             type="button"
             class="btn btn-outline-danger"
+            :disabled="in_submission"
           >
             تأكيد وإرجاع
           </button>
@@ -142,6 +143,7 @@ export default {
   data() {
     return {
       showReturnButton: false,
+      in_submission: false,
     };
   },
   computed: {
@@ -258,6 +260,7 @@ export default {
         val.bill = this.currentBillInModal.id;
         val.sale = this.currentBillInModal.sale.id;
       });
+      this.in_submission = true;
       await axiosConfig
         .post("returnProduct", products, this.config)
         .then((res) => {
@@ -267,10 +270,12 @@ export default {
           );
           document.getElementById("closeModal").click();
           this.fetchBills();
+          this.in_submission = false;
         })
         .catch((err) => {
           this.swalMsg("error", "لقد حدث خطأ ما الرجاء الراجعة المدخلات");
           console.log(err.response);
+          this.in_submission = false;
         });
     },
   },

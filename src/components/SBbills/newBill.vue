@@ -162,6 +162,46 @@
               </div>
             </div>
 
+            <div class="row">
+              <!-- company phone -->
+              <div class="col-md-6 mb-3">
+                <label for="companyPhone">رقم المُشتري</label>
+                <veeField
+                  type="text"
+                  name="companyPhone"
+                  class="form-control"
+                  id="companyPhone"
+                  placeholder="رقم المُشتري"
+                />
+                <ErrorMessage class="text-danger" name="companyPhone" />
+              </div>
+              <!-- delegate phone -->
+              <div class="col-md-6 mb-3">
+                <label for="delegatePhone">رقم المندوب </label>
+                <veeField
+                  type="text"
+                  name="delegatePhone"
+                  class="form-control"
+                  id="delegatePhone"
+                  placeholder="رقم المندوب "
+                />
+                <ErrorMessage class="text-danger" name="delegatePhone" />
+              </div>
+            </div>
+            <div class="row">
+              <!-- bill description -->
+              <div class="col-md-12 mb-3">
+                <label for="billDesc">ملاحظات حول الفاتورة</label>
+                <veeField
+                  as="textarea"
+                  name="billDesc"
+                  class="form-control"
+                  id="billDesc"
+                />
+                <ErrorMessage class="text-danger" name="billDesc" />
+              </div>
+            </div>
+
             <hr class="mb-4" />
 
             <!-- paymentmethods -->
@@ -304,6 +344,9 @@ export default {
       generateBillSchema: {
         companyname: "required",
         paymentMethod: "required|numeric",
+        companyPhone: "numeric|min:10",
+        delegatePhone: "numeric|min:10",
+        billDesc: "max:255",
       },
       discount: 0,
       totalInvoice: 0,

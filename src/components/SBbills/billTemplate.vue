@@ -63,28 +63,48 @@
                 <main>
                   <div class="row contacts">
                     <div class="col invoice-to text-end">
-                      <div class="text-gray-light fs-5 fw-bold">
-                        فاتورة بإسم : {{ bill.company_name }}
-                      </div>
-                      <div class="address">
-                        العنوان : {{ bill.company_address }}
-                      </div>
-                      <div class="email">
-                        <a>اسم المُشتري : {{ bill.buyer_name }}</a>
-                      </div>
-                      <div class="email">
-                        <a>اسم الكفيل : {{ bill.sponsor_name }}</a>
-                      </div>
-                      <div class="email">
-                        <a v-if="bill.payment_method_id == 1"
-                          >طريقة الدفع : نقدي</a
-                        >
-                        <a v-if="bill.payment_method_id == 2"
-                          >طريقة الدفع : حوالة مصرفية</a
-                        >
-                        <a v-if="bill.payment_method_id == 3"
-                          >طريقة الدفع : دفع آجل</a
-                        >
+                      <div class="d-flex flex-row justify-content-between">
+                        <div class="info-holder">
+                          <div class="text-gray-light fs-5 fw-bold">
+                            فاتورة بإسم : {{ bill.company_name }}
+                          </div>
+                          <div class="address">
+                            العنوان : {{ bill.company_address }}
+                          </div>
+                          <div class="email">
+                            <a>اسم المُشتري : {{ bill.buyer_name }}</a>
+                          </div>
+                          <div class="email">
+                            <a>رقم الجهة المعنية : {{ bill.company_phone }}</a>
+                          </div>
+                        </div>
+                        <div class="info-holder">
+                          <div class="text-gray-light fs-5 fw-bold">
+                            معلومات أخرى :
+                          </div>
+                          <div class="email">
+                            <a>اسم الكفيل : {{ bill.sponsor_name }}</a>
+                          </div>
+                          <div class="email">
+                            <a v-if="bill.payment_method_id == 1"
+                              >طريقة الدفع : نقدي</a
+                            >
+                            <a v-if="bill.payment_method_id == 2"
+                              >طريقة الدفع : حوالة مصرفية</a
+                            >
+                            <a v-if="bill.payment_method_id == 3"
+                              >طريقة الدفع : دفع آجل</a
+                            >
+                          </div>
+                          <template v-if="bill.delegate_name.length > 0">
+                            <div class="email">
+                              <a>اسم المندوب : {{ bill.delegate_name }}</a>
+                            </div>
+                            <div class="email">
+                              <a>رقم المندوب : {{ bill.delegate_phone }}</a>
+                            </div>
+                          </template>
+                        </div>
                       </div>
                     </div>
                     <div class="col invoice-details text-start">
@@ -174,9 +194,9 @@
                       </tr>
                     </tfoot>
                   </table>
-                  <div id="footer-2">
-                    <div class="thanks">شكرا لك !</div>
-                    <div class="notices mb-5">
+                  <div>
+                    <div class="thanks" id="el-1">شكرا لك !</div>
+                    <div class="notices mb-3" id="el-2">
                       <div class="fs-4">ملاحظات :</div>
                       <div class="notice">
                         {{
@@ -186,8 +206,13 @@
                         }}
                       </div>
                     </div>
-                    <div class="mb-5">توقيع المُشتري: ___________________</div>
-                    <footer class="d-flex flex-row justify-content-between">
+                    <div class="mb-5" id="el-3">
+                      توقيع المُشتري: ___________________
+                    </div>
+                    <footer
+                      class="d-flex flex-row justify-content-between"
+                      id="el-4"
+                    >
                       <div>
                         تاريخ الفاتورة : {{ formatDate(bill.created_at) }}
                       </div>
@@ -230,7 +255,7 @@ export default {
           quality: 1,
         },
         pagebreak: {
-          avoid: ["#footer", "#footer-2"],
+          avoid: ["#footer", "#el-1", "#el-2", "#el-3", "#el-4"],
         },
         html2canvas: {
           scale: 3,

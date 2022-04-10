@@ -1,27 +1,11 @@
 <template>
-  <!--cards options-->
-  <div class="row text-center my-5 mx-3">
-    <div class="col-sm-12 col-xl-12 col-lg-12 col-md-12 text-end pb-1">
-      <strong class="fs-4">معلومات حول الحساب</strong>
+  <div class="row justify-content-between mt-5 mb-2 mx-4">
+    <div class="col-6">
+      <b class="d-block mb-2 mainTitle">قائمة المستخديمن </b>
     </div>
-    <div class="col m-1">
-      <div
-        class="contianer border border-1 rounded shadow-sm px-3 py-1 me-3 h-100"
-      >
-        <b class="text-dark fw-900 fs-4 pb-3 d-block">جميع المنتجات المُدخلة</b>
-        <b class="fs-3 text-ss-blue fw-900">120,000</b>
-      </div>
-    </div>
-    <div class="col m-1">
-      <div
-        class="contianer border border-1 rounded shadow-sm px-3 py-1 me-3 h-100"
-      >
-        <b class="text-dark fw-900 fs-4 pb-3 d-block">جميع ما تم بيعة</b>
-        <b class="fs-3 text-ss-blue fw-900">111,220 ly</b>
-      </div>
-    </div>
+    <!-- add user card -->
     <div
-      class="col m-1"
+      class="col-3 text-center"
       @click.prevent="changeDynamicComponent('newUser')"
       style="cursor: pointer"
     >
@@ -33,23 +17,26 @@
       </div>
     </div>
   </div>
+  <!--cards options-->
+  <div class="row text-center mx-3"></div>
   <!--separator-->
   <hr class="mx-5 my-2" />
   <!--all users section-->
   <div class="row mx-3">
     <div class="col-sm-12 col-md-12 col-lg-12 table-responsive">
-      <!--filters-->
-      <div class="my-3 me-5">
-        <b class="d-block mb-2 fs-4">قائمة المستخديمن </b>
-        <p class="d-inline ms-2">
-          <label for="filterBy">البحث بواسطة </label>
-        </p>
-        <select name="filterBy" id="filterBy" @change.prevent="filterusers">
-          <option>الكل</option>
-          <option v-for="role in allRoles" :key="role" :value="role">
-            {{ role }}
-          </option>
-        </select>
+      <div class="row my-3 mx-4">
+        <!--filters-->
+        <div class="col-6">
+          <p class="d-inline ms-2">
+            <label for="filterBy">البحث بواسطة </label>
+          </p>
+          <select name="filterBy" id="filterBy" @change.prevent="filterusers">
+            <option value="/">الكل</option>
+            <option v-for="role in allRoles" :key="role" :value="role">
+              {{ role }}
+            </option>
+          </select>
+        </div>
       </div>
       <!--all users table-->
       <div class="ms-2 me-5">
@@ -212,7 +199,7 @@ export default {
       this.allUsersWithRoles = null;
       this.userslength = 0;
       let role = document.getElementById("filterBy").value;
-      role = role != null ? `/${role}` : "";
+      role = role != "/" ? `/${role}` : "";
       await axiosConfig.get(`allUsers${role}`, this.config).then((res) => {
         console.log(res.data);
         this.allUsersWithRoles = res.data.info || "no results found";

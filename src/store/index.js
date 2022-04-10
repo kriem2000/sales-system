@@ -54,7 +54,8 @@ export default createStore({
           data["user"] = response.data.userCred;
           commit("setAuthenticated", data);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err.response);
           return;
         });
     },

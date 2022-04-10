@@ -308,3 +308,12 @@ li.Collapsible-item > div ul li a {
 .height-fit-content {
   height: fit-content;
 }
+
+.mainTitle {
+  color: #216bae;
+  font-size: 35px;
+}
+
+.display-8 {
+  font-size: 18px;
+}

@@ -3,11 +3,13 @@
     <div class="row">
       <!--greeting bar-->
       <div class="col-lg-12 col-md-12 col-sm-12 mb-2">
-        <h4 class="text-end mt-5 ps-5 dbh-title">مرحبا {{ user.name }}</h4>
+        <h4 class="text-end mt-5 ps-5 dbh-title mainTitle">
+          مرحبا {{ user.name }}
+        </h4>
       </div>
     </div>
     <br />
-    <div class="row">
+    <div class="row vh-75">
       <!--right col-->
       <div class="col-lg-8 col-md-12 col-sm-12">
         <div
@@ -157,7 +159,7 @@
                 name="productId"
                 type="text"
                 class="form-control border-0 p-1 my-2 focus-none d-inline"
-                placeholder="الرقم التعريفي للمُنتج"
+                placeholder="الرقم التعريفي او اسم المُنتج"
               />
               <button
                 @click="axiosScan"
@@ -168,14 +170,15 @@
               </button>
             </div>
           </div>
-          <!--calculator box-->
+          <!--Quick search box-->
           <div class="col">
-            <calculator />
+            <QuickSearch />
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- for the bill screen -->
   <div v-if="generatingBill">
     <new-bill
       :beginBillProcess="beginBillProcess"
@@ -186,10 +189,10 @@
 </template>
 
 <script>
-import Calculator from "@/components/SBhome/Calculator.vue";
 import { mapGetters } from "vuex";
 import axiosConfig from "@/includes/axiosConfig";
 import newBill from "@/components/SBbills/newBill.vue";
+import QuickSearch from "@/components/SBhome/QuickSearch.vue";
 
 export default {
   props: {
@@ -205,7 +208,7 @@ export default {
     }),
   },
   name: "SBHome",
-  components: { Calculator, newBill },
+  components: { newBill, QuickSearch },
   data() {
     return {
       lastScannedId: "",
@@ -237,7 +240,6 @@ export default {
       /* check if where the id coming from ? input or scanner device */
       if (id.type == "click") {
         this.scanBtn_in_submission = true;
-        console.log(id.type);
         id = document.getElementsByName("productId")[0].value;
         document.getElementsByName("productId")[0].value = "";
       }
@@ -401,5 +403,9 @@ input[type="number"] {
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
+}
+
+.form-control:focus {
+  box-shadow: unset;
 }
 </style>

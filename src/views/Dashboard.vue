@@ -28,7 +28,9 @@ import SBhome from "@/components/SBhome/SBhome.vue";
 import SBdashboard from "@/components/SBdashboard.vue";
 import newUser from "@/components/SBusers/newUser.vue";
 import usersList from "@/components/SBusers/usersList.vue";
+import userStatistics from "@/components/SBusers/userStatistics.vue";
 import newProduct from "@/components/SBproducts/newProduct.vue";
+import productsList from "@/components/SBproducts/productsList.vue";
 import newImportedBill from "@/components/SBbills/newImportedBill.vue";
 import billsList from "@/components/SBbills/billsList.vue";
 
@@ -40,9 +42,11 @@ export default {
     SBdashboard,
     newUser,
     usersList,
+    userStatistics,
     newProduct,
     newImportedBill,
     billsList,
+    productsList,
   },
   data() {
     return {
