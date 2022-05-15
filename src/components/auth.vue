@@ -34,7 +34,9 @@
                 id="floatingInput"
                 placeholder="name@example.com"
               />
-              <label for="floatingInput">البريد الالكتروني</label>
+              <label for="floatingInput" style="width: 100%; text-align: right"
+                >البريد الالكتروني</label
+              >
               <div class="text-start text-danger fw-bold p-2">
                 <ErrorMessage name="email" />
               </div>
@@ -47,7 +49,11 @@
                 id="floatingPassword"
                 placeholder="Password"
               />
-              <label for="floatingPassword">كلمة المرور</label>
+              <label
+                for="floatingPassword"
+                style="width: 100%; text-align: right"
+                >كلمة المرور</label
+              >
             </div>
             <div class="text-start text-danger fw-bold p-2">
               <ErrorMessage name="password" />
