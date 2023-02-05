@@ -342,7 +342,7 @@ export default {
         : (paymentMethod = ``);
 
       baseURL == null
-        ? (baseURL = `http://sales-system-api.com/api/allBills${from}${to}${paymentStatus}${paymentMethod}?page=${this.currentPage}`)
+        ? (baseURL = `https://localhost:8000/api/allBills${from}${to}${paymentStatus}${paymentMethod}?page=${this.currentPage}`)
         : "";
       /* send the request */
       this.in_submission = true;

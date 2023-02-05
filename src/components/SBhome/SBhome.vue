@@ -267,7 +267,8 @@ export default {
       let input = document.getElementById(`ProductQuantity${id}`);
       let number = input != null ? input.value : 1;
       let totalcol = document.getElementById(`totalCol${id}`);
-      if (number <= quantity) {
+      console.log(typeof number, typeof quantity);
+      if (parseInt(number) <= quantity) {
         if (totalcol != null) {
           input.classList.contains("is-invalid")
             ? input.classList.toggle("is-invalid", false)
@@ -285,7 +286,7 @@ export default {
     inc(id, price, quantity) {
       console.log(quantity);
       let number = document.getElementById(`ProductQuantity${id}`);
-      if (number.value < quantity) {
+      if (parseInt(number.value) < quantity) {
         number.value = parseInt(number.value) ? parseInt(number.value) + 1 : 1;
         this.getTotalPrice(id, price, quantity);
       }
